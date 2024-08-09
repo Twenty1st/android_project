@@ -1,12 +1,13 @@
 <resources>
-    <string name="app_name">rating_movie_app</string>
-    <string name="criteriaStory" />
-    <string name="criteriaGrath">2</string>
-    <string name="criteriaActor">3</string>
-    <string name="criteriaFeels">4\n</string>
-    <string name="criteriaShoot">5</string>
-    <string name="criteriaLogik" />
-    <string name="criteriaOrig" />
-    <string name="criteriaThink" />
-    <string name="criteriaGripp" />
+    <string name="app_name">add Оценочку</string>
+    <string name="criteriaStory">Сюжет</string>
+    <string name="criteriaGrath">Графика</string>
+    <string name="criteriaActor">Игра актеров</string>
+    <string name="criteriaFeels">Эмоции</string>
+    <string name="criteriaShoot">Съемка</string>
+    <string name="criteriaLogik">Логичность</string>
+    <string name="criteriaOrig">Оригинальность</string>
+    <string name="criteriaThink">Заставил задуматься</string>
+    <string name="criteriaGripp">Захватываемость</string>
+    <string name="editDataText">Создать оценку</string>
 </resources>

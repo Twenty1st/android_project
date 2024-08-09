@@ -22,18 +22,20 @@
             <LinearLayout
                 android:id="@+id/constraintLayout6"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:orientation="horizontal">
+                android:background="#B585FF"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:id="@+id/textView"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="#B585FF"
-                    android:paddingLeft="15dp"
+                    android:paddingStart="15dp"
                     android:paddingBottom="3dp"
+                    android:layout_weight="1"
                     android:text="Мои оценки"
                     android:textColor="#001F3F"
                     android:textSize="28sp"
@@ -44,11 +46,9 @@
                 <ImageButton
                     android:id="@+id/menuBut"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_height="match_parent"
                     android:background="#00FFFFFF"
-                    android:src="?attr/actionModeCloseDrawable"
+                    android:src="@drawable/menu_icon"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </LinearLayout>
@@ -73,7 +73,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:backgroundTint="#8C82FC"
-                android:src="?attr/actionModeCloseDrawable"
+                android:src="@drawable/filtr_icon"
                 app:contentDescription="NULL"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/constraintLayout6" />
@@ -94,7 +94,7 @@
                     android:id="@+id/leftPag"
                     android:layout_width="57dp"
                     android:layout_height="49dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="5dp"
                     android:backgroundTint="#8C82FC"
                     android:src="?attr/actionModeCloseDrawable"
                     app:contentDescription="NULL"
@@ -117,7 +117,7 @@
                     android:id="@+id/rightPag"
                     android:layout_width="56dp"
                     android:layout_height="49dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="5dp"
                     android:backgroundTint="#8C82FC"
                     android:rotationY="180"
                     android:src="?attr/actionModeCloseDrawable"
