@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Rating_movie_app"
         tools:targetApi="31">
+        <activity android:name=".editDataRate_class">
+            <!-- Если у активности есть особые атрибуты, добавьте их здесь -->
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true">
