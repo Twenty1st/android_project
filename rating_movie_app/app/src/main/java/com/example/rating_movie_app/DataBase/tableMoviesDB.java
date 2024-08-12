@@ -15,23 +15,27 @@ public class tableMoviesDB {
         db = dbHelper.getWritableDatabase();
     }
 
-    public void insertMovie(String movieName, float movieRating, int movieYear, int movieType, int movieReview) {
-        ContentValues values = new ContentValues();
-        values.put("movie_name", movieName);
-        values.put("movie_rating", movieRating);
-        values.put("movie_year", movieYear);
-        values.put("movie_type", movieType);
-        values.put("movie_review", movieReview);
+//    public void insertMovie(String movieName, float movieRating, int movieYear, int movieType, int movieReview) {
+//        ContentValues values = new ContentValues();
+//        values.put("movie_name", movieName);
+//        values.put("movie_rating", movieRating);
+//        values.put("movie_year", movieYear);
+//        values.put("movie_type", movieType);
+//        values.put("movie_review", movieReview);
+//        db.insert("movies", null, values);
+//    }
+
+    public void insertMovie(ContentValues values) {
         db.insert("movies", null, values);
     }
 
-//    public Cursor executeCustomQuery(String customQuery) {
-//        // Выполните ваш запрос
-//        Cursor cursor = db.rawQuery(customQuery, null);
-//        Log.d("query", customQuery);
-//        // Возвращаем результат
-//        return cursor;
-//    }
+    public Cursor executeCustomQuery(String customQuery) {
+        // Выполните ваш запрос
+        Cursor cursor = db.rawQuery(customQuery, null);
+        Log.d("query", customQuery);
+        // Возвращаем результат
+        return cursor;
+    }
 
 //    public void executeVoidQuery(String customQuery) {
 //        // Выполните ваш запрос
@@ -47,15 +51,15 @@ public class tableMoviesDB {
     //JOIN movie_ganres mg ON m.movie_id = mg.movie_id
     //JOIN ganres g ON mg.ganre_id = g.ganre_id;
 
-    public String[] getMovieByName(String movieName) {
-        String query = "SELECT m.movie_id, m.movie_year, m.movie_review, t.type_name FROM movies m" +
+    public String[] getMovieById(String movieId) {
+        String query = "SELECT m.movie_name, m.movie_year, m.movie_review, t.type_name FROM movies m" +
                 " JOIN mtypes t ON m.movie_type = t.type_id" +
-                " WHERE m.movie_name = '"+movieName+"'";
+                " WHERE m.movie_id = '"+movieId+"'";
         Cursor cursor = executeCustomQuery(query);
         String[] movieData = null;
 
         if (cursor != null  && cursor.moveToFirst()) {
-            int movieId = cursor.getInt(cursor.getColumnIndex("movie_id"));
+            String movieName = cursor.getString(cursor.getColumnIndex("movie_name"));
             int movieYear = cursor.getInt(cursor.getColumnIndex("movie_year"));
             String movieType = cursor.getString(cursor.getColumnIndex("type_name"));
             int movieReview = cursor.getInt(cursor.getColumnIndex("movie_review"));
@@ -67,7 +71,7 @@ public class tableMoviesDB {
         return movieData;
     }
 
-    public int updateMovieRating(int movieId, String movieName, float newRating, int movieYear, int movieType, int movieReview) {
+    public int updateMovieRating(int movieId, String movieName, double newRating, int movieYear, int movieType, int movieReview) {
         ContentValues values = new ContentValues();
         values.put("movie_rating", newRating);
         values.put("movie_name", movieName);
