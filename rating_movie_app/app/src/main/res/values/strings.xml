@@ -10,4 +10,20 @@
     <string name="criteriaThink">Заставил задуматься</string>
     <string name="criteriaGripp">Захватываемость</string>
     <string name="editDataText">Создать оценку</string>
+
+    <string-array name="movie_types">
+        <item>-</item>
+        <item>Фильм</item>
+        <item>Сериал</item>
+    </string-array>
+
+    <string-array name="sort_items">
+        <item>-</item>
+        <item>Рейтинг по убыв.</item>
+        <item>Рейтинг по возр.</item>
+        <item>Названия А-Я</item>
+        <item>Названия Я-А</item>
+        <item>Год по убыв.</item>
+        <item>Год по возр.</item>
+    </string-array>
 </resources>

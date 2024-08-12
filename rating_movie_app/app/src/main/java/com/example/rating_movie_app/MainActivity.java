@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Создаем Intent для перехода
                 Intent intent = new Intent(MainActivity.this, editDataRate_class.class);
-                intent.putExtra("edit", false);
+                intent.putExtra("isEdit", false);
                 startActivity(intent);
             }
         });
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(String movieName) {
                 Intent intent = new Intent(MainActivity.this, editDataRate_class.class);
-                intent.putExtra("edit", true);
+                intent.putExtra("isEdit", true);
                 intent.putExtra("movieName", movieName);
                 startActivity(intent);
             }
