@@ -23,11 +23,13 @@
                 android:layout_height="wrap_content">
 
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:id="@+id/constraintLayout5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:background="#B585FF"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -36,12 +38,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/editDataText"
+                        android:layout_margin="3dp"
                         android:textSize="28sp"
                         android:textStyle="bold"
+                        android:textColor="#001F3F"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constraintLayout4"
@@ -693,7 +697,7 @@
                         android:layout_marginTop="14dp"
                         app:layout_constraintStart_toEndOf="@+id/textRating"
                         app:layout_constraintTop_toBottomOf="@+id/checkReview"
-                        app:srcCompat="@drawable/star_favourite_15499" />
+                        app:srcCompat="@drawable/star_icon" />
 
                     <TextView
                         android:id="@+id/textScore"
