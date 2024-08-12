@@ -8,6 +8,14 @@ public class recycleDomain {
     private String DateRate;
     private double Rating;
 
+    public recycleDomain(String title, String genres, int year, String dateRate, double rating) {
+        Title = title;
+        Genres = genres;
+        Year = year;
+        DateRate = dateRate;
+        Rating = rating;
+    }
+
 
     public String getTitle() {
         return Title;

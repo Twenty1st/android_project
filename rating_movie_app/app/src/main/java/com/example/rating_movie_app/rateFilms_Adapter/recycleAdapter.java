@@ -53,7 +53,7 @@ public class recycleAdapter extends RecyclerView.Adapter<recycleAdapter.ViewHold
         if(rating >= 7){
             holder.itemLayout.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.backg_green));
         }
-        holder.itemYear.setText(ratingList.get(position).getYear());
+        holder.itemYear.setText(String.valueOf(ratingList.get(position).getYear()));
         holder.itemDateRate.setText(ratingList.get(position).getDateRate());
         holder.itemGenres.setText(ratingList.get(position).getGenres());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
