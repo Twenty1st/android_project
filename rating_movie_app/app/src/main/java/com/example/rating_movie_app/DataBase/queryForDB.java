@@ -1,5 +1,6 @@
 package com.example.rating_movie_app.DataBase;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -64,7 +65,92 @@ public class queryForDB {
         return count;
     }
 
-    public void insertData(String movieName, double movieRating, int movieYear, int movieType, int movieReview, String genres, List<Integer> evals){
+    public boolean insertData(movieData_Domain movieData, tableEvalsDB.Eval movieEvals, Context context){
+        SQLiteDatabase db = null;
+        try {
+            // Получаем экземпляр базы данных
+            databaseManager dbManager = new databaseManager(context);
+            dbManager.open();
+            db = dbManager.getDatabase();
 
+            // Начинаем транзакцию
+            db.beginTransaction();
+
+            // Вставляем данные в таблицу movies
+            ContentValues movieValues = new ContentValues();
+            movieValues.put("movie_name", movieData.getTitle());
+            movieValues.put("movie_rating", movieData.getRating());
+            movieValues.put("movie_year", movieData.getYear());
+            movieValues.put("movie_type", movieData.getmType());
+            movieValues.put("movie_review", movieData.isReview() ? 1 : 0);
+            movieValues.put("movie_dateRate", movieData.getDateRate());
+            long movieId = db.insert("movies", null, movieValues);
+
+            // Вставляем данные в таблицу evaluations
+            ContentValues evalValues = new ContentValues();
+            evalValues.put("eval_id", movieId); // Предполагается, что eval_id совпадает с movie_id
+            evalValues.put("eval_story", movieEvals.eval_story);
+            evalValues.put("eval_grath", movieEvals.eval_grath);
+            evalValues.put("eval_actor", movieEvals.eval_actor);
+            evalValues.put("eval_shoot", movieEvals.eval_shoot);
+            evalValues.put("eval_feels", movieEvals.eval_feels);
+            evalValues.put("eval_logik", movieEvals.eval_logik);
+            evalValues.put("eval_orig", movieEvals.eval_orig);
+            evalValues.put("eval_think", movieEvals.eval_think);
+            evalValues.put("eval_gripp", movieEvals.eval_gripp);
+            db.insert("evaluations", null, evalValues);
+
+            // Вставляем данные в таблицу movie_genres (если есть жанры)
+            if (movieData.getGenres() != null) {
+                String[] genres = movieData.getGenres().split(", ");
+                for (String genre : genres) {
+                    ContentValues genreValues = new ContentValues();
+                    genreValues.put("mg_movie_id", movieId);
+                    genreValues.put("mg_genre_id", getGenreIdByName(db, genre)); // Метод для получения ID жанра по имени
+                    db.insert("movie_genres", null, genreValues);
+                }
+            }
+
+            // Устанавливаем успешное завершение транзакции
+            db.setTransactionSuccessful();
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            // Завершаем транзакцию
+            if (db != null) {
+                db.endTransaction();
+                //db.close(); ??
+            }
+        }
+    }
+
+    // Метод для получения ID жанра по его имени, если жанра нет - добавить его
+    private int getGenreIdByName(SQLiteDatabase db, String genreName) {
+        int genreId = -1;
+        Cursor cursor = null;
+
+        try {
+            // Попробуем найти жанр в таблице genres
+            cursor = db.query("genres", new String[]{"genre_id"}, "genre_name=?", new String[]{genreName}, null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                // Жанр найден, получаем его ID
+                genreId = cursor.getInt(cursor.getColumnIndex("genre_id"));
+            } else {
+                // Жанра нет, добавляем его в таблицу
+                ContentValues values = new ContentValues();
+                values.put("genre_name", genreName);
+                genreId = (int) db.insert("genres", null, values);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return genreId;
     }
 }

@@ -43,7 +43,7 @@ public class tableMoviesDB {
                 String movieGenres = cursor.getString(cursor.getColumnIndex("movie_genres"));
                 int movieReview = cursor.getInt(cursor.getColumnIndex("movie_review"));
 
-                movieData = new String[]{movieId, movieName, String.valueOf(movieYear), movieType, String.valueOf(movieReview), movieGenres};
+                movieData = new String[]{movieName, String.valueOf(movieYear), movieType, movieGenres, String.valueOf(movieReview)};
             }
         } finally {
             if (cursor != null) {

@@ -9,7 +9,9 @@
     <string name="criteriaOrig">Оригинальность</string>
     <string name="criteriaThink">Заставил задуматься</string>
     <string name="criteriaGripp">Захватываемость</string>
-    <string name="editDataText">Создать оценку</string>
+
+    <string name="editDataText">Редактировать оценку</string>
+    <string name="addDataText">Создать оценку</string>
 
     <string-array name="movie_types">
         <item>-</item>

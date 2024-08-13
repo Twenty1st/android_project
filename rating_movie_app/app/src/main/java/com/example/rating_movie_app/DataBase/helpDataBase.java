@@ -66,4 +66,12 @@ public class helpDataBase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
+
+    @Override
+    public void close() {
+        // Закрываем базу данных, если она открыта
+        if (getWritableDatabase().isOpen()) {
+            getWritableDatabase().close();
+        }
+    }!!!!!
 }
