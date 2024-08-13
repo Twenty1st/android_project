@@ -28,7 +28,7 @@ public class editDataRate_class extends AppCompatActivity {
     private EditText genresText;
 
     private boolean isEdit;
-    private int movieID = 0;
+    private int movieID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

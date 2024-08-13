@@ -18,14 +18,14 @@ public class queryForDB {
     // JOIN movie_genres ON mg_movie_id = movie_id
     //JOIN genres ON genre_id = mg_genre_id;
 
-    private tableMoviesDB movies_db;
+    public ArrayList<recycleDomain> selectFromDB(Context context, String query) {
+        databaseManager dbManager = new databaseManager(context);
+        dbManager.open();
 
-    public ArrayList selectFromDB(Context context, String query) {
+        SQLiteDatabase db = dbManager.getDatabase();
         ArrayList<recycleDomain> movies = new ArrayList<>();
-
-        movies_db = new tableMoviesDB(context);
-
-        Cursor cursor = movies_db.executeCustomQuery(query);
+        tableMoviesDB dbMovies = new tableMoviesDB(db);
+        Cursor cursor = dbMovies.executeCustomQuery(query);
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -42,30 +42,25 @@ public class queryForDB {
 
             cursor.close();
         }
-        movies_db.close();
+        dbManager.close();
         return movies;
     }
 
-    public int getCountFields(Context context, String query) {
-        // Выполните запрос к базе данных
-        movies_db = new tableMoviesDB(context);
-        Cursor cursor = movies_db.executeCustomQuery(query);
+    public int getCountFromTable(Context context, String query) {
+        databaseManager dbManager = new databaseManager(context);
+        dbManager.open();
+
+        SQLiteDatabase db = dbManager.getDatabase();
+        tableMoviesDB dbMovies = new tableMoviesDB(db);
+        Cursor cursor = dbMovies.executeCustomQuery(query, null);
 
         int count = 0;
-
-        try {
-            // Перемещаем курсор к первой записи (если она есть)
-            if (cursor.moveToFirst()) {
-                // Получаем значение из первого столбца (в данном случае, единственного)
-                count = cursor.getInt(0);
-            }
-        } finally {
-            if (cursor != null && !cursor.isClosed()) {
-                cursor.close();
-            }
+        if (cursor != null && cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+            cursor.close();
         }
-        movies_db.close();
-        // Возвращаем количество записей в таблице
+
+        dbManager.close();
         return count;
     }
 
