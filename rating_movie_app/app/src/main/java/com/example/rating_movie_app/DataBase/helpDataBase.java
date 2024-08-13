@@ -73,5 +73,5 @@ public class helpDataBase extends SQLiteOpenHelper {
         if (getWritableDatabase().isOpen()) {
             getWritableDatabase().close();
         }
-    }!!!!!
+    }
 }

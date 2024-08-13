@@ -37,6 +37,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -49,6 +50,8 @@ public class editDataRate_class extends AppCompatActivity {
     private boolean isEdit;
     private int movieID;
 
+    private static queryForDB dbHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +60,7 @@ public class editDataRate_class extends AppCompatActivity {
         chipGroup = findViewById(R.id.chipGroup);
         genresText = findViewById(R.id.editText);
 
+        dbHelper  = new queryForDB(this);
 
         chipGenresListener();
         syncSeekBarwithText();
@@ -363,11 +367,7 @@ public class editDataRate_class extends AppCompatActivity {
 //region database work funcs
 
     private void getDataFromDB(int movieID) {
-        databaseManager dbManager = new databaseManager(editDataRate_class.this);
-        dbManager.open();
-
-        SQLiteDatabase db = dbManager.getDatabase();
-        tableMoviesDB dbMovies = new tableMoviesDB(db);
+        tableMoviesDB dbMovies = new tableMoviesDB(dbHelper.getDb());
 
         String[] movieData = dbMovies.getMovieById(String.valueOf(movieID));
 
@@ -386,7 +386,7 @@ public class editDataRate_class extends AppCompatActivity {
             checkBox.setChecked(true);
         }
 
-        tableEvalsDB evals = new tableEvalsDB(db);
+        tableEvalsDB evals = new tableEvalsDB(dbHelper.getDb());
 
         // Получаем данные оценки для фильма с определенным ID
         tableEvalsDB.Eval evalsData = evals.getEvalById(movieID);
@@ -413,10 +413,6 @@ public class editDataRate_class extends AppCompatActivity {
     }
 
     private void setDataonDB() {
-
-        queryForDB dbQuery = new queryForDB();
-
-
 
         int estimationStory = getEstimation(findViewById(R.id.textEstimationStory));
         int estimationGrath = getEstimation(findViewById(R.id.textEstimationGrath));
@@ -479,21 +475,28 @@ public class editDataRate_class extends AppCompatActivity {
         TextView text = findViewById(R.id.textRating);
         double rating = Double.parseDouble(text.getText().toString());
 
-        String movieDateRate = LocalDateTime.now().format("dd.MM.yyyy");
+        // Получение текущей даты и времени
+        LocalDateTime now = LocalDateTime.now();
+
+        // Форматирование даты и времени
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String movieDateRate = now.format(formatter);
 
         movieData_Domain movieData = new movieData_Domain(movieID, movieName, movieGenres, movieYear, movieDateRate, rating, movieType, movieReview);
 
 
         if (!isEdit) {
 
-            boolean isOK = dbQuery.insertData(movieData, evalsData, editDataRate_class.this);
-
-            showToast(this, "Успешно!");
-
-            clearFields();
+            boolean isOK = dbHelper.insertData(movieData, evalsData);
+            if(isOK){
+                showToast(this, "Успешно!");
+                clearFields();
+            }else{
+                showToast(this, "Ошибка при работе с базой!");
+            }
 
         } else {
-
+            ;
         }
     }
 
@@ -506,13 +509,7 @@ public class editDataRate_class extends AppCompatActivity {
         builder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                databaseManager dbManager = new databaseManager(editDataRate_class.this);
-                dbManager.open();
-
-                SQLiteDatabase db = dbManager.getDatabase();
-                tableMoviesDB movie = new tableMoviesDB(db);
-                movie.deleteMovie(movieID);
-                db.close();
+                dbHelper.deleteMovie(movieID);
                 dialog.dismiss();
                 Intent intent = new Intent(editDataRate_class.this, MainActivity.class);
                 startActivity(intent);

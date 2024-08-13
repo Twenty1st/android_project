@@ -18,15 +18,20 @@ public class queryForDB {
     // FROM movies JOIN mtypes ON type_id = movie_type
     // JOIN movie_genres ON mg_movie_id = movie_id
     //JOIN genres ON genre_id = mg_genre_id;
+    private static databaseManager dbManager;
+    private static SQLiteDatabase db;
 
-    public ArrayList<recycleDomain> selectFromDB(Context context, String query) {
-        databaseManager dbManager = new databaseManager(context);
+    public queryForDB(Context context) {
+        dbManager = new databaseManager(context);
         dbManager.open();
+        db = dbManager.getDatabase();
+    }
 
-        SQLiteDatabase db = dbManager.getDatabase();
+
+    public ArrayList<recycleDomain> selectFromDB(String query) {
         ArrayList<recycleDomain> movies = new ArrayList<>();
         tableMoviesDB dbMovies = new tableMoviesDB(db);
-        Cursor cursor = dbMovies.executeCustomQuery(query);
+        Cursor cursor = dbMovies.executeCustomQuery(query, null);
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -43,15 +48,10 @@ public class queryForDB {
 
             cursor.close();
         }
-        dbManager.close();
         return movies;
     }
 
-    public int getCountFromTable(Context context, String query) {
-        databaseManager dbManager = new databaseManager(context);
-        dbManager.open();
-
-        SQLiteDatabase db = dbManager.getDatabase();
+    public int getCountFromTable(String query) {
         tableMoviesDB dbMovies = new tableMoviesDB(db);
         Cursor cursor = dbMovies.executeCustomQuery(query, null);
 
@@ -61,17 +61,15 @@ public class queryForDB {
             cursor.close();
         }
 
-        dbManager.close();
         return count;
     }
 
-    public boolean insertData(movieData_Domain movieData, tableEvalsDB.Eval movieEvals, Context context){
-        SQLiteDatabase db = null;
+    public boolean insertData(movieData_Domain movieData, tableEvalsDB.Eval movieEvals){
         try {
-            // Получаем экземпляр базы данных
-            databaseManager dbManager = new databaseManager(context);
-            dbManager.open();
-            db = dbManager.getDatabase();
+//            // Получаем экземпляр базы данных
+//            databaseManager dbManager = new databaseManager(context);
+//            dbManager.open();
+//            db = dbManager.getDatabase();
 
             // Начинаем транзакцию
             db.beginTransaction();
@@ -152,5 +150,20 @@ public class queryForDB {
         }
 
         return genreId;
+    }
+
+    public void deleteMovie(int movieId){
+        tableMoviesDB movie = new tableMoviesDB(db);
+        movie.deleteMovie(movieId);
+    }
+
+    public void close() {
+        if (db != null) {
+            db.close();
+        }
+    }
+
+    public SQLiteDatabase getDb(){
+        return db;
     }
 }

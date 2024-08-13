@@ -1,5 +1,6 @@
 package com.example.rating_movie_app.rateFilms_Adapter;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 public class recycleAdapter extends RecyclerView.Adapter<recycleAdapter.ViewHolder> {
 
     public interface ItemClickListener {
-        void onItemClick(String movieName);
+        void onItemClick(String movieID);
     }
     ArrayList<recycleDomain> ratingList;
     private ItemClickListener itemClickListener;
@@ -39,7 +40,7 @@ public class recycleAdapter extends RecyclerView.Adapter<recycleAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull recycleAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull recycleAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         String title = ratingList.get(position).getTitle();
         holder.itemTitle.setText(title);
         double rating = ratingList.get(position).getRating();
@@ -59,7 +60,7 @@ public class recycleAdapter extends RecyclerView.Adapter<recycleAdapter.ViewHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                itemClickListener.onItemClick(title);
+                itemClickListener.onItemClick(String.valueOf(ratingList.get(position).getID()));
             }
         });
 
