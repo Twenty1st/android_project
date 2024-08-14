@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class recycleAdapter extends RecyclerView.Adapter<recycleAdapter.ViewHolder> {
 
     public interface ItemClickListener {
-        void onItemClick(String movieID);
+        void onItemClick(int movieID);
     }
     ArrayList<recycleDomain> ratingList;
     private ItemClickListener itemClickListener;
@@ -60,7 +60,7 @@ public class recycleAdapter extends RecyclerView.Adapter<recycleAdapter.ViewHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                itemClickListener.onItemClick(String.valueOf(ratingList.get(position).getID()));
+                itemClickListener.onItemClick(ratingList.get(position).getID());
             }
         });
 

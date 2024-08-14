@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.example.rating_movie_app.DataBase.callDBMethods;
 import com.example.rating_movie_app.DataBase.queryForDB;
 import com.example.rating_movie_app.rateFilms_Adapter.recycleAdapter;
 import com.example.rating_movie_app.rateFilms_Adapter.recycleDomain;
@@ -20,14 +21,16 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.Adapter adapter;
     private RecyclerView recyclerViewRatingList;
 
-    private static queryForDB dbHelper;
+    private static callDBMethods dbHelper;
+    private queryForDB dbQueries;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dbHelper = new queryForDB(this);
+        dbHelper = new callDBMethods(this);
+        dbQueries = new queryForDB();
 
         FloatingActionButton butAddRate = findViewById(R.id.fabAdd);
         butAddRate.setOnClickListener(new View.OnClickListener() {
@@ -58,18 +61,13 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewRatingList.setLayoutManager(linearLayoutManager);
 
         // Запрос данных из базы данных
-        String query = "SELECT movie_name, movie_year, type_name, movie_dateRate, movie_rating, " +
-                "GROUP_CONCAT(genre_name ORDER BY genre_name SEPARATOR ', ') AS movie_genres " +
-                "FROM movies JOIN mtypes ON type_id = movie_type " +
-                "JOIN movie_genres ON mg_movie_id = movie_id " +
-                "JOIN genres ON genre_id = mg_genre_id " +
-                "GROUP BY movies.movie_id DESC";
+        String query = queryForDB.getFull_query();
 
         ArrayList<recycleDomain> movies = dbHelper.selectFromDB(query);
 
         recycleAdapter.ItemClickListener listener = new recycleAdapter.ItemClickListener() {
             @Override
-            public void onItemClick(String movieID) {
+            public void onItemClick(int movieID) {
                 Intent intent = new Intent(MainActivity.this, editDataRate_class.class);
                 intent.putExtra("isEdit", true);
                 intent.putExtra("movieID", movieID);

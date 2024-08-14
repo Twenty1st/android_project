@@ -8,9 +8,11 @@ import android.util.Log;
 
 public class tableMoviesDB {
     private SQLiteDatabase db;
+    private static queryForDB dbQueries;
 
     public tableMoviesDB(SQLiteDatabase db) {
         this.db = db;
+        dbQueries = new queryForDB();
     }
 
     public void insertMovie(String movieName, double movieRating, int movieYear, int movieType, int movieReview, String movieDateRate) {
@@ -25,12 +27,7 @@ public class tableMoviesDB {
     }
 
     public String[] getMovieById(String movieId) {
-        String query = String.format("SELECT m.movie_name, m.movie_year, m.movie_review, t.type_name, " +
-                "GROUP_CONCAT(genre_name ORDER BY genre_name SEPARATOR ', ') AS movie_genres " +
-                "FROM movies m " +
-                "JOIN mtypes t ON m.movie_type = t.type_id  " +
-                "JOIN movie_genres ON mg_movie_id = m.movie_id " +
-                "JOIN genres ON genre_id = mg_genre_id WHERE m.movie_id = ?");
+        String query = queryForDB.getQuery_forGetById();
         Cursor cursor = null;
         String[] movieData = null;
 

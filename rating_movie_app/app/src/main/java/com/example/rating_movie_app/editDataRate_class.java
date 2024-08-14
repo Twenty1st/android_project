@@ -6,13 +6,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,19 +26,15 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.rating_movie_app.DataBase.databaseManager;
 import com.example.rating_movie_app.DataBase.movieData_Domain;
-import com.example.rating_movie_app.DataBase.queryForDB;
+import com.example.rating_movie_app.DataBase.callDBMethods;
 import com.example.rating_movie_app.DataBase.tableEvalsDB;
 import com.example.rating_movie_app.DataBase.tableMoviesDB;
-import com.example.rating_movie_app.rateFilms_Adapter.recycleDomain;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 public class editDataRate_class extends AppCompatActivity {
@@ -50,7 +45,7 @@ public class editDataRate_class extends AppCompatActivity {
     private boolean isEdit;
     private int movieID;
 
-    private static queryForDB dbHelper;
+    private static callDBMethods dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +55,7 @@ public class editDataRate_class extends AppCompatActivity {
         chipGroup = findViewById(R.id.chipGroup);
         genresText = findViewById(R.id.editText);
 
-        dbHelper  = new queryForDB(this);
+        dbHelper  = new callDBMethods(this);
 
         chipGenresListener();
         syncSeekBarwithText();
@@ -199,6 +194,7 @@ public class editDataRate_class extends AppCompatActivity {
             chip.setText(text);
             chip.setCloseIconVisible(true);
             chip.setOnCloseIconClickListener(v -> chipGroup.removeView(chip));
+            //chip.setTextAppearance(R.style.CustomChipStyle);
             chipGroup.addView(chip);
             genresText.setText("");
         }
@@ -319,7 +315,20 @@ public class editDataRate_class extends AppCompatActivity {
         }
 
 
-        String[] ganres = ganre.split(",");
+        String[] genres = ganre.split(",");
+        for (String g : genres) {
+            if (!TextUtils.isEmpty(g)) {
+                //Chip chip = new Chip(new ContextThemeWrapper(this, R.style.CustomChipStyle), null, 0);
+
+                Chip chip = new Chip(this);
+                chip.setText(g.trim());
+                chip.setCloseIconVisible(true);
+                chip.setOnCloseIconClickListener(v -> chipGroup.removeView(chip));
+                // Применение кастомного стиля
+                //chip.setTextAppearance(R.style.CustomChipStyle);
+                chipGroup.addView(chip);
+            }
+        }
     }
 
     private void clearFields(){
@@ -366,7 +375,9 @@ public class editDataRate_class extends AppCompatActivity {
 
 //region database work funcs
 
-    private void getDataFromDB(int movieID) {
+    private void getDataFromDB(int getMovieID) {
+        movieID = getMovieID;
+
         tableMoviesDB dbMovies = new tableMoviesDB(dbHelper.getDb());
 
         String[] movieData = dbMovies.getMovieById(String.valueOf(movieID));
@@ -417,15 +428,15 @@ public class editDataRate_class extends AppCompatActivity {
         int estimationStory = getEstimation(findViewById(R.id.textEstimationStory));
         int estimationGrath = getEstimation(findViewById(R.id.textEstimationGrath));
         int estimationActor = getEstimation(findViewById(R.id.textEstimationActor));
-        int estimationFeels = getEstimation(findViewById(R.id.textEstimationFeels));
         int estimationShoot = getEstimation(findViewById(R.id.textEstimationShoot));
+        int estimationFeels = getEstimation(findViewById(R.id.textEstimationFeels));
         int estimationLogik = getEstimation(findViewById(R.id.textEstimationLogik));
         int estimationOrig = getEstimation(findViewById(R.id.textEstimationOrig));
         int estimationThink = getEstimation(findViewById(R.id.textEstimationThink));
         int estimationGripp = getEstimation(findViewById(R.id.textEstimationGripp));
 
-        tableEvalsDB.Eval evalsData = new tableEvalsDB.Eval(estimationStory, estimationGrath, estimationActor, estimationFeels,
-                estimationShoot, estimationLogik, estimationOrig, estimationThink, estimationGripp);
+        tableEvalsDB.Eval evalsData = new tableEvalsDB.Eval(estimationStory, estimationGrath, estimationActor, estimationShoot,
+                estimationFeels, estimationLogik, estimationOrig, estimationThink, estimationGripp);
 
         EditText editText = findViewById(R.id.textName);
         String movieName = editText.getText().toString();
@@ -509,7 +520,11 @@ public class editDataRate_class extends AppCompatActivity {
         builder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dbHelper.deleteMovie(movieID);
+                if(dbHelper.deleteMovie(movieID)){
+                    showToast(editDataRate_class.this, "Запись удалена!");
+                }else{
+                    showToast(editDataRate_class.this, "Ошибка при удалении!");
+                }
                 dialog.dismiss();
                 Intent intent = new Intent(editDataRate_class.this, MainActivity.class);
                 startActivity(intent);
