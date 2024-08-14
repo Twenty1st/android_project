@@ -2,6 +2,7 @@ package com.example.rating_movie_app;
 
 import static com.example.rating_movie_app.ShowToast.showToast;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,6 +36,7 @@ import com.google.android.material.chip.ChipGroup;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Locale;
 
 public class editDataRate_class extends AppCompatActivity {
@@ -88,6 +90,12 @@ public class editDataRate_class extends AppCompatActivity {
 
     }
 
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onBackPressed() {
+        // Просто оставляем активити открытой и ничего не делаем
+        // Это предотвратит переход к предыдущей активности
+    }
 
 
     //region UI listeners
@@ -331,6 +339,30 @@ public class editDataRate_class extends AppCompatActivity {
         }
     }
 
+    private int validateYearField(EditText editText) {
+        int movieYear;
+        try {
+            movieYear = Integer.parseInt(editText.getText().toString());
+            if (movieYear > LocalDateTime.now().getYear()) {
+                showToast(this, "Заполните поле 'Год' - корректно!");
+                return -1;  // Возвращаем -1 или другой код ошибки
+            }
+        } catch (Exception ex) {
+            showToast(this, "Заполните все поля!");
+            return -1;  // Возвращаем -1 или другой код ошибки
+        }
+        return movieYear;
+    }
+
+    private String validateMovieName(EditText editText) {
+        String movieName = editText.getText().toString();
+        if (movieName.isEmpty()) {
+            showToast(this, "Заполните все поля!");
+            return null;
+        }
+        return movieName;
+    }
+
     private void clearFields(){
         EditText editText = findViewById(R.id.textName);
         editText.setText("");
@@ -439,19 +471,15 @@ public class editDataRate_class extends AppCompatActivity {
                 estimationFeels, estimationLogik, estimationOrig, estimationThink, estimationGripp);
 
         EditText editText = findViewById(R.id.textName);
-        String movieName = editText.getText().toString();
-        if (movieName.equals("")) {
-            showToast(this, "Заполните все поля!");
-            return;
+        String movieName = validateMovieName(editText);
+        if (movieName == null) {
+            return;  // Если проверка не прошла, прерываем выполнение метода
         }
 
         editText = findViewById(R.id.textYear);
-        int movieYear;
-        try {
-            movieYear = Integer.parseInt(editText.getText().toString());
-        } catch (Exception ex) {
-            showToast(this, "Заполните все поля!");
-            return;
+        int movieYear = validateYearField(editText);
+        if (movieYear == -1) {
+            return;  // Если проверка не прошла, прерываем выполнение метода
         }
 
         Spinner spinner = findViewById(R.id.boxTypes);
@@ -462,6 +490,10 @@ public class editDataRate_class extends AppCompatActivity {
             return;
         }
 
+        if(chipGroup.getChildCount() == 0){
+            showToast(this, "Заполните все поля!");
+            return;
+        }
         StringBuilder chipData = new StringBuilder();
         for (int i = 0; i < chipGroup.getChildCount(); i++) {
             View chip = chipGroup.getChildAt(i);
@@ -507,7 +539,12 @@ public class editDataRate_class extends AppCompatActivity {
             }
 
         } else {
-            ;
+            boolean isOK = dbHelper.updateData(movieData, evalsData);
+            if(isOK){
+                showToast(this, "Данные обновлены!");
+            }else{
+                showToast(this, "Ошибка при работе с базой!");
+            }
         }
     }
 

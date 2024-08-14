@@ -13,6 +13,9 @@
     <string name="editDataText">Редактировать оценку</string>
     <string name="addDataText">Создать оценку</string>
 
+    <string name="textAllRates">Все оценки</string>
+    <string name="textReviewMovies">Буду пересматривать</string>
+
     <string-array name="movie_types">
         <item>-</item>
         <item>Фильм</item>
