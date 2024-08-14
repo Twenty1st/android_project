@@ -44,12 +44,21 @@ public class MainActivity extends AppCompatActivity {
 
         setListeners();
 
-        countAllRecords("WHERE movie_review = 1");
         countAllRecords("");
 
         // Получаем SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         int savedPage = sharedPreferences.getInt("curPage", 1); // 1 - значение по умолчанию
+        isReview = sharedPreferences.getBoolean("isReview", false);
+        if (isReview) {
+            TabLayout tabLayout = findViewById(R.id.tabs);  // находим TabLayout
+            // Получаем нужный Tab по индексу (например, второй Tab, с индексом 1)
+            TabLayout.Tab tab = tabLayout.getTabAt(1);
+            // Проверяем, что Tab не null
+            if (tab != null) {
+                tab.select();  // выделяем этот Tab
+            }
+        }
         paginationList.setCurPage(savedPage);
 
         countPagination();
@@ -79,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("curPage", paginationList.getCurPage());
+        editor.putBoolean("isReview", isReview);
         editor.apply(); // Или editor.commit(); для синхронного сохранения
     }
 

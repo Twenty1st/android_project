@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">add Оценочку</string>
+    <string name="app_name">Оцени сейчас</string>
     <string name="criteriaStory">Сюжет</string>
     <string name="criteriaGrath">Графика</string>
     <string name="criteriaActor">Игра актеров</string>
