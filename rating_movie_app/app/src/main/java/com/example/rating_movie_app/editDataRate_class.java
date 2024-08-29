@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -36,13 +37,19 @@ import com.google.android.material.chip.ChipGroup;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class editDataRate_class extends AppCompatActivity {
 
     private ChipGroup chipGroup;
-    private EditText genresText;
+    //private EditText genresText;
+
+    private AutoCompleteTextView genreAutoComplete;
+    private ArrayAdapter<String> adapter;
+    private List<String> genreList;
 
     private boolean isEdit;
     private int movieID;
@@ -55,7 +62,8 @@ public class editDataRate_class extends AppCompatActivity {
         setContentView(R.layout.edit_data_rate_activity);
 
         chipGroup = findViewById(R.id.chipGroup);
-        genresText = findViewById(R.id.editText);
+        //genresText = findViewById(R.id.editText);
+        genreAutoComplete = findViewById(R.id.genreAutoComplete);
 
         dbHelper  = new callDBMethods(this);
 
@@ -99,35 +107,75 @@ public class editDataRate_class extends AppCompatActivity {
 
 
     //region UI listeners
+//    private void chipGenresListener(){
+//        genresText.setOnEditorActionListener((v, actionId, event) -> {
+//            if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
+//                addChipFromInput();
+//                return true;
+//            }
+//            return false;
+//        });
+//        // Adding a TextWatcher to detect spaces
+//        genresText.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                // No action needed before text is changed
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                // Check if the last character entered is a space
+//                if (s.toString().endsWith(" ")) {
+//                    addChipFromInput();
+//                }
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                // No action needed after text is changed
+//            }
+//        });
+//    }
+
     private void chipGenresListener(){
-        genresText.setOnEditorActionListener((v, actionId, event) -> {
+        genreAutoComplete.setOnEditorActionListener((v, actionId, event) -> {
             if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
                 addChipFromInput();
                 return true;
             }
             return false;
         });
-        // Adding a TextWatcher to detect spaces
-        genresText.addTextChangedListener(new TextWatcher() {
+
+        // Загрузка жанров из базы данных
+        getGenreList();
+
+        // Слушатель ввода текста
+        genreAutoComplete.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // No action needed before text is changed
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // Check if the last character entered is a space
                 if (s.toString().endsWith(" ")) {
                     addChipFromInput();
+                } else {
+                    filterGenres(s.toString());  // Обновляем список жанров в адаптере
                 }
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-                // No action needed after text is changed
-            }
+            public void afterTextChanged(Editable s) {}
+        });
+        // Слушатель на выбор элемента из списка подсказок
+        genreAutoComplete.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedGenre = (String) parent.getItemAtPosition(position);
+            genreAutoComplete.setText(selectedGenre);  // Установите текст в AutoCompleteTextView
+            addChipFromInput();  // Добавляем выбранный элемент как Chip
         });
     }
+
+
     private void setupSeekBarListener(SeekBar seekBar, TextView textView) {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -174,7 +222,6 @@ public class editDataRate_class extends AppCompatActivity {
             }
         });
     }
-
     private void setListenTouch(){
         EditText editText = findViewById(R.id.textName);
         editText.setOnTouchListener(new View.OnTouchListener() {
@@ -196,7 +243,7 @@ public class editDataRate_class extends AppCompatActivity {
 //region activity functions
 
     private void addChipFromInput() {
-        String text = genresText.getText().toString().trim();
+        String text = genreAutoComplete.getText().toString().trim();
         if (!TextUtils.isEmpty(text)) {
             Chip chip = new Chip(this);
             chip.setText(text);
@@ -204,7 +251,7 @@ public class editDataRate_class extends AppCompatActivity {
             chip.setOnCloseIconClickListener(v -> chipGroup.removeView(chip));
             //chip.setTextAppearance(R.style.CustomChipStyle);
             chipGroup.addView(chip);
-            genresText.setText("");
+            genreAutoComplete.setText("");
         }
     }
 
@@ -304,10 +351,10 @@ public class editDataRate_class extends AppCompatActivity {
         String[] items = getResources().getStringArray(R.array.movie_types);
 
         // Создаем ArrayAdapter с использованием встроенного макета для простого выпадающего списка
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
 
         // Применяем адаптер к Spinner
-        spinner.setAdapter(adapter);
+        spinner.setAdapter(adapter1);
         if(!type.equals("")){
             int index = -1;
             for (int i = 0; i < items.length; i++) {
@@ -401,6 +448,17 @@ public class editDataRate_class extends AppCompatActivity {
 
         countRatingandScore();
 
+    }
+
+    // Фильтрация жанров по введенному тексту
+    private void filterGenres(String query) {
+        if (adapter != null) {
+            adapter.getFilter().filter(query);
+            genreAutoComplete.showDropDown(); // Показываем подсказки
+        }
+
+        // Отображаем список подсказок
+        //genreAutoComplete.showDropDown();
     }
 
 //endregion
@@ -542,6 +600,7 @@ public class editDataRate_class extends AppCompatActivity {
             boolean isOK = dbHelper.updateData(movieData, evalsData);
             if(isOK){
                 showToast(this, "Данные обновлены!");
+                getGenreList();
             }else{
                 showToast(this, "Ошибка при работе с базой!");
             }
@@ -578,5 +637,12 @@ public class editDataRate_class extends AppCompatActivity {
 
     }
 
+    private void getGenreList(){
+        // Загрузка жанров из базы данных
+        genreList = new ArrayList<>();
+        genreList = dbHelper.getAllGenres();
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, genreList);
+        genreAutoComplete.setAdapter(adapter);
+    }
 //endregion
 }

@@ -41,8 +41,6 @@ public class recycleAdapter extends RecyclerView.Adapter<recycleAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull recycleAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        String title = ratingList.get(position).getTitle();
-        holder.itemTitle.setText(title);
         double rating = ratingList.get(position).getRating();
         holder.itemRating.setText(String.valueOf(rating));
         if(rating < 5){
@@ -54,7 +52,16 @@ public class recycleAdapter extends RecyclerView.Adapter<recycleAdapter.ViewHold
         if(rating >= 7){
             holder.itemLayout.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.backg_green));
         }
-        holder.itemYear.setText(String.valueOf(ratingList.get(position).getYear()));
+
+        String yearT = String.valueOf(ratingList.get(position).getYear());
+        String title = ratingList.get(position).getTitle();
+        if(title.contains("(Сериал)")){
+            title = title.replaceFirst("\\(Сериал\\)", "");
+            yearT += "   (Сериал)";
+        }
+        holder.itemYear.setText(yearT);
+        holder.itemTitle.setText(title);
+
         holder.itemDateRate.setText(ratingList.get(position).getDateRate());
         holder.itemGenres.setText(ratingList.get(position).getGenres());
         holder.itemView.setOnClickListener(new View.OnClickListener() {

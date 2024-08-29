@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.rating_movie_app.rateFilms_Adapter.recycleDomain;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class callDBMethods {
 
@@ -40,7 +41,7 @@ public class callDBMethods {
                 String movieGenres = cursor.getString(cursor.getColumnIndex("movie_genres"));
                 String movieDateRate = cursor.getString(cursor.getColumnIndex("movie_dateRate"));
                 double movieRating = cursor.getDouble(cursor.getColumnIndex("movie_rating"));
-
+                movieName += movieType.equals("Сериал") ? "(Сериал)" : "";
                 movies.add(new recycleDomain(movieId, movieName, movieGenres, movieYear, movieDateRate, movieRating));
             } while (cursor.moveToNext());
 
@@ -247,7 +248,20 @@ public class callDBMethods {
         }
     }
 
+    public List<String> getAllGenres() {
+        List<String> genres = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT genre_name FROM genres", null);
 
+        if (cursor.moveToFirst()) {
+            do {
+                genres.add(cursor.getString(cursor.getColumnIndex("genre_name")));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+
+        return genres;
+    }
 
     public void close() {
         if (db != null) {
